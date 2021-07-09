@@ -1,24 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useState, useEffect} from 'react';
+import { Container, Form } from 'semantic-ui-react';
+import MessageIcon from './MessageIcon';
+import 'semantic-ui-css/semantic.min.css';
 
-function App() {
+const App = () => {
+  //const
+  const AUTOSAVE_INTERVAL = 3000;
+
+  //initial
+  const initialState = {
+        name: '',
+  }
+
+  //initial object
+  const [currentState, setCurrentState] = useState(initialState);
+  //
+  const [lastText, setLastText] = useState("");
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => { //
+    try {
+
+      //timer
+      const timer = setTimeout(() => {
+        if(lastText !== currentState.name){
+          setVisible(true);
+          setLastText(currentState.name);
+        }        
+      }, AUTOSAVE_INTERVAL);
+
+      return () => clearTimeout(timer);
+      //eslint-disable-next-line      
+    } catch (error) {
+      console.log(error);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentState]) //fired change object
+
+  //change value text and input data
+  const handleInputChange = e => {
+      const {name, value} = e.target;
+      setCurrentState({...currentState, [name]: value});
+  };  
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Container style={{paddingTop:22}}>
+      <Form>
+          <div className="form-group">
+              <label>Input : </label>
+              <input type="number" className="form-control"
+                      id="name"
+                      name="name" value={currentState.name}
+                      onChange={handleInputChange}/>
+                      {visible?<MessageIcon />:null}                              
+          </div>
+      </Form>
+    </Container>
   );
 }
 
